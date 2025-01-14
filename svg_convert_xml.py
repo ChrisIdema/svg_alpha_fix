@@ -2,7 +2,7 @@
 
 # from bs4 import BeautifulSoup
 
-# bad_image_path = "test_text.svg"
+# bad_image_path = "test_test.svg"
 
 # with open(bad_image_path, 'r', encoding='utf8') as f:
 #     svg_string = f.read()
@@ -37,7 +37,7 @@
 #             text['fill-opacity'] = rgba[3]
 #             # print(rgba)
        
-# with open('test_text_converted.svg', 'w', encoding='utf8') as f:
+# with open('svg_test_converted.svg', 'w', encoding='utf8', newline='\n') as f:
 #     # f.write(soup.prettify())  # makes weird changes, because it ignores xml:space="preserve"
 #     f.write(str(soup))
 
@@ -52,5 +52,5 @@
 # output = dom.minidom.parseString(xml_string)
 # # print(output.toprettyxml())
 
-# with open('test_text_converted.svg', 'w', encoding='utf8') as f:
+# with open('svg_test_converted.svg', 'w', encoding='utf8', newline='\n') as f:
 #     f.write(output.toprettyxml())
