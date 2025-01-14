@@ -27,11 +27,7 @@ regex = r"(fill|stroke|flood-color)\s*=\s*\"#([[:xdigit:]]{4}|[[:xdigit:]]{8})\"
 
 def hex_color_substitutor(match_obj):
     a = match_obj.group(1)
-    if match_obj.group(1) == "flood-color":
-        b = "flood"
-    else:
-        b = a
-    b += "-opacity"
+    b = a.removesuffix('-color') + "-opacity"
 
     if len(match_obj.group(2)) == 4:
         color_value = match_obj.group(2)[:3]
