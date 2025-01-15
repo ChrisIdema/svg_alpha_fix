@@ -1,11 +1,9 @@
-import xml.etree.ElementTree as ET
-
+import lxml.etree as ET
 import xml_prettify
 
 bad_image_path = "svg_test.svg"
 converted_image_path = "svg_test_converted_xml.svg"
 
-ET.register_namespace('',"http://www.w3.org/2000/svg")
 tree = ET.parse(bad_image_path)
 root = tree.getroot()
 
@@ -30,7 +28,6 @@ for key in["fill", "stroke", "flood-color"]:
             opacity_value = f"{opacity_float:.3f}".rstrip('0').rstrip('.')
             node.set(key,color_value)                       
             node.set(opacity_key,opacity_value)
-
       
 with open(converted_image_path, 'w', encoding='utf8', newline='\n') as f:
     f.write(xml_prettify.prettify_string(ET.tostring(root, encoding='unicode')))
