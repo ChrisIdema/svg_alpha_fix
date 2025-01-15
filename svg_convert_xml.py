@@ -142,7 +142,7 @@ class Prettifier(xml.sax.ContentHandler):
                 print()
 
             if len(attributes_string) > 60:
-                attributes_string = f"\n{self.indent*self.level + ' '*(len(tag)+2)}".join([f'{key}:"{value}"' for key,value in attributes.items()])
+                attributes_string = f"\n{self.indent*self.level + ' '*(len(tag)+2)}".join([f'{key}="{value}"' for key,value in attributes.items()])
         
             print(self.indent*self.level, end="")
             print(f"<{tag}", end="")
