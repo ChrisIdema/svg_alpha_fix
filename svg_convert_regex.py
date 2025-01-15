@@ -1,6 +1,8 @@
 import re
 import os, fnmatch
 
+import xml_prettify
+
 def svg_alpha_fix(svg_string):
 
     # split rgba colors in color and opacity:
@@ -32,7 +34,7 @@ def svg_alpha_fix(svg_string):
 
 
 bad_image_path = "svg_test.svg"
-converted_image_path = "svg_test_converted.svg"
+converted_image_path = "svg_test_converted_regex.svg"
 
 # test_str = ("fill=\"#11223380\"\n"
 # 	"fill=\"#1238\"\n"
@@ -49,8 +51,10 @@ with open(bad_image_path, 'r', encoding='utf8') as f:
     
 result = svg_alpha_fix(svg_string)
 
+# print(result)
+
 with open(converted_image_path, 'w', encoding='utf8', newline='\n') as f:
-    f.write(result)
+    f.write(xml_prettify.prettify_string(result))
 
 
 # bad_image_folder_path = "..."
