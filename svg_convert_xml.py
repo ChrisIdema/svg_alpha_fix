@@ -1,25 +1,16 @@
 from bs4 import BeautifulSoup
 
+import xml_prettify
+
 bad_image_path = "svg_test.svg"
+converted_image_path = "svg_test_converted_xml.svg"
 
 with open(bad_image_path, 'r', encoding='utf8') as f:
     svg_string = f.read()
 
 soup = BeautifulSoup(svg_string, "xml")
 
-# with open(bad_image_path, 'r', encoding='utf8') as f:
-#    soup = BeautifulSoup(f, "xml")
-
 svg_tag = soup.find("svg")
-
-# print(svg_tag.namespace)
-# svg_tag.namespace = ''
-# del svg_tag.namespace
-
-# if "xmlns:svg" in svg_tag.attrs:
-#    del svg_tag.attrs["xmlns:svg"]
-
-# soup = BeautifulSoup(str(soup), "xml")
 
 for tag in svg_tag.find_all():
     for key, value in list(tag.attrs.items()):
@@ -34,10 +25,10 @@ for tag in svg_tag.find_all():
                 # print(value)
 
                 if len(value) == 5:
-                    color_value = value[1:4]                          
+                    color_value = value[0:4]                          
                     opacity_float = float(int(value[4:5], base=16)/15)
                 else:
-                    color_value = value[1:7]  
+                    color_value = value[0:7]  
                     opacity_float = float(int(value[7:9], base=16)/255)  
 
                 # print(color_value)
@@ -50,6 +41,6 @@ for tag in svg_tag.find_all():
 
 
       
-with open('svg_test_converted.svg', 'w', encoding='utf8', newline='\n') as f:
+with open(converted_image_path, 'w', encoding='utf8', newline='\n') as f:
+    # f.write(xml_prettify.prettify_string(str(soup)))
     f.write(str(soup))
-
