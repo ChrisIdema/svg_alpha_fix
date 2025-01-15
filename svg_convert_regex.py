@@ -36,38 +36,11 @@ def svg_alpha_fix(svg_string):
 bad_image_path = "svg_test.svg"
 converted_image_path = "svg_test_converted_regex.svg"
 
-# test_str = ("fill=\"#11223380\"\n"
-# 	"fill=\"#1238\"\n"
-# 	"stroke=\"#11223380\"\n"
-# 	"flood-color=\"#11223380\"\n"
-# 	"fill=\"rgba(1,2,3,0.4)\"\n"
-# 	"fill=\"rgba(1,2,3,40%)\"\n"
-# 	"stroke=\"rgba(5,6,7,0.8)\"\n"
-# 	"flood-color=\"rgba(5,6,7,0.8)\"\n")
-# svg_string = test_str
-
 with open(bad_image_path, 'r', encoding='utf8') as f:
     svg_string = f.read()
     
 result = svg_alpha_fix(svg_string)
 
-# print(result)
 
 with open(converted_image_path, 'w', encoding='utf8', newline='\n') as f:
     f.write(xml_prettify.prettify_string(result))
-
-
-# bad_image_folder_path = "..."
-
-# fileOfDirectory = os.listdir(bad_image_folder_path)
-# pattern = "*.svg"
-# for filename in fileOfDirectory:
-#     if fnmatch.fnmatch(filename, pattern):
-#         full_path = os.path.join(bad_image_folder_path, filename)
-#         print(full_path)
-#         with open(full_path, 'r', encoding='utf8') as f:
-#             svg_string = f.read()
-#         result = svg_alpha_fix(svg_string)
-#         converted_image_path = os.path.join(bad_image_folder_path, filename)
-#         with open(converted_image_path, 'w', encoding='utf8', newline='\n') as f:
-#             f.write(result)
