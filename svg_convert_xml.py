@@ -15,7 +15,14 @@ for key in["fill", "stroke", "flood-color"]:
             rgba = value.replace('rgba(','').replace(')','').split(',')
             opacity_value = rgba[3]     
             node.set(key,f'rgb({rgba[0]},{rgba[1]},{rgba[2]})')                       
-            node.set(opacity_key,opacity_value)
+            # node.set(opacity_key,opacity_value)
+
+            # insert opacity value right after color:
+            attribs = node.attrib.items()
+            node.attrib.clear()
+            attribs.insert(list(dict(attribs).keys()).index(key)+1, (opacity_key,opacity_value))     
+            node.attrib.update(attribs)
+
         elif value.startswith("#") and len(value) in [5,9]:
             if len(value) == 5:
                 color_value = value[0:4]                          
@@ -27,7 +34,13 @@ for key in["fill", "stroke", "flood-color"]:
             # limit to 3 decimal digits, remove unnecessary trailing zeros and decimal point: 
             opacity_value = f"{opacity_float:.3f}".rstrip('0').rstrip('.')
             node.set(key,color_value)                       
-            node.set(opacity_key,opacity_value)
+            # node.set(opacity_key,opacity_value)
+
+            # insert opacity value right after color:
+            attribs = node.attrib.items()
+            node.attrib.clear()
+            attribs.insert(list(dict(attribs).keys()).index(key)+1, (opacity_key,opacity_value))     
+            node.attrib.update(attribs)
       
 with open(converted_image_path, 'w', encoding='utf8', newline='\n') as f:
     f.write(xml_prettify.prettify_string(ET.tostring(root, encoding='unicode')))
