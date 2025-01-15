@@ -16,7 +16,6 @@ class Prettifier(xml.sax.ContentHandler, xml.sax.handler.LexicalHandler):
         return self.string
 
     def print_method(self, text="", end="\n"):
-        # print(text, end=end)
         if self.external_print_method:
             self.external_print_method(text, end)
         self.string += text + end

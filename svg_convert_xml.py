@@ -22,17 +22,12 @@ for tag in svg_tag.find_all():
                 opacity_value = rgba[3]                
                 tag.attrs[opacity_key] = opacity_value
             elif value.startswith("#") and len(value) in [5,9]:
-                # print(value)
-
                 if len(value) == 5:
                     color_value = value[0:4]                          
                     opacity_float = float(int(value[4:5], base=16)/15)
                 else:
                     color_value = value[0:7]  
                     opacity_float = float(int(value[7:9], base=16)/255)  
-
-                # print(color_value)
-                # print(opacity_float)
                 
                 # limit to 3 decimal digits, remove unnecessary trailing zeros and decimal point: 
                 opacity_value = f"{opacity_float:.3f}".rstrip('0').rstrip('.')
