@@ -108,7 +108,7 @@ with open('svg_test_ET.svg', 'wb') as f:
 import xml.sax
 
 
-class Prettifier(xml.sax.ContentHandler):
+class Prettifier(xml.sax.ContentHandler, xml.sax.handler.LexicalHandler):
     def __init__(self):
         self.level = -1
         self.preserve_space_stack=[False]
@@ -188,6 +188,10 @@ class Prettifier(xml.sax.ContentHandler):
 
         self.last_was_opening_tag = self.last_was_opening_tag and empty_content
 
+    # lexical handler methods:
+    def comment(self, content):
+        print(f"<!--{content}-->", end="")
+
 
 parser = xml.sax.make_parser()
 # turn off namepsaces
@@ -195,4 +199,7 @@ parser.setFeature(xml.sax.handler.feature_namespaces, 0)
 
 Handler = Prettifier()
 parser.setContentHandler( Handler )
+
+parser.setProperty ( xml.sax.handler.property_lexical_handler, Handler)
+
 parser.parse(bad_image_path)
