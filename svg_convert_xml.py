@@ -1,12 +1,13 @@
-#this is not working yet, all the pretty print methods modify significant whitespace
 
-from bs4 import BeautifulSoup
 
 bad_image_path = "svg_test.svg"
 
+# from bs4 import BeautifulSoup
+
 with open(bad_image_path, 'r', encoding='utf8') as f:
     svg_string = f.read()
-soup = BeautifulSoup(svg_string, "xml")
+
+# soup = BeautifulSoup(svg_string, "xml")
 
 # with open(bad_image_path, 'r', encoding='utf8') as f:
 #    soup = BeautifulSoup(f, "xml")
@@ -76,27 +77,27 @@ soup = BeautifulSoup(svg_string, "xml")
 #     # print('"',tag.text,'"')
        
        
-with open('svg_test_soup.svg', 'w', encoding='utf8', newline='\n') as f:
-    f.write(soup.prettify())  # makes weird changes, because it ignores xml:space="preserve"
-    # f.write(str(soup))
+# with open('svg_test_soup.svg', 'w', encoding='utf8', newline='\n') as f:
+#     f.write(soup.prettify())  # makes weird changes, because it ignores xml:space="preserve"
+#     # f.write(str(soup))
 
-import xml.dom.minidom
-from xml import dom
+# import xml.dom.minidom
+# from xml import dom
 
-output = dom.minidom.parseString(svg_string)
-# print(output.toprettyxml())
+# output = dom.minidom.parseString(svg_string)
+# # print(output.toprettyxml())
 
-with open('svg_test_minidom.svg', 'w', encoding='utf8', newline='\n') as f:
-    f.write(output.toprettyxml())
+# with open('svg_test_minidom.svg', 'w', encoding='utf8', newline='\n') as f:
+#     f.write(output.toprettyxml())
 
 
-import xml.etree.ElementTree as ET
-tree = ET.parse(bad_image_path)
+# import xml.etree.ElementTree as ET
+# tree = ET.parse(bad_image_path)
 
-ET.indent(tree, space='  ', level=0)
+# ET.indent(tree, space='  ', level=0)
 
-with open('svg_test_ET.svg', 'wb') as f:
-    tree.write(f)
+# with open('svg_test_ET.svg', 'wb') as f:
+#     tree.write(f)
 
 
 # from defusedxml.ElementTree import parse
@@ -106,15 +107,27 @@ with open('svg_test_ET.svg', 'wb') as f:
 #     defused.write(f)
 
 import xml.sax
+from io import StringIO
 
 
 class Prettifier(xml.sax.ContentHandler, xml.sax.handler.LexicalHandler):
-    def __init__(self):
+    def __init__(self, print_method=None):
         self.level = -1
         self.preserve_space_stack=[False]
         self.last_was_opening_tag = False #tags without content or empty content don't need closing tag on next line
         self.indent = " "*4
         self.first_tag = True
+        self.external_print_method = print_method
+        self.string=""
+
+    def get_string(self):
+        return self.string
+
+    def print_method(self, text="", end="\n"):
+        # print(text, end=end)
+        if self.external_print_method:
+            self.external_print_method(text, end)
+        self.string += text + end
 
     # Call when an element starts
     def startElement(self, tag, attributes):
@@ -130,25 +143,25 @@ class Prettifier(xml.sax.ContentHandler, xml.sax.handler.LexicalHandler):
 
         if self.preserve_space_stack[-1]:
             if self.preserve_space_stack[-2] == False:
-                print()
-                print(self.indent*self.level, end="")
+                self.print_method()
+                self.print_method(self.indent*self.level, end="")
 
-            print(f"<{tag}", end="")
-            print(" "*(len(attributes_string)!=0), end="")
-            print(attributes_string, end="")
-            print(">", end="")
+            self.print_method(f"<{tag}", end="")
+            self.print_method(" "*(len(attributes_string)!=0), end="")
+            self.print_method(attributes_string, end="")
+            self.print_method(">", end="")
         else:
             if not self.first_tag:
-                print()
+                self.print_method()
 
             if len(attributes_string) > 60:
                 attributes_string = f"\n{self.indent*self.level + ' '*(len(tag)+2)}".join([f'{key}="{value}"' for key,value in attributes.items()])
         
-            print(self.indent*self.level, end="")
-            print(f"<{tag}", end="")
-            print(" "*(len(attributes_string)!=0), end="")
-            print(attributes_string, end="")
-            print(">", end="")
+            self.print_method(self.indent*self.level, end="")
+            self.print_method(f"<{tag}", end="")
+            self.print_method(" "*(len(attributes_string)!=0), end="")
+            self.print_method(attributes_string, end="")
+            self.print_method(">", end="")
 
         self.last_was_opening_tag = True   
         self.first_tag = False 
@@ -157,14 +170,14 @@ class Prettifier(xml.sax.ContentHandler, xml.sax.handler.LexicalHandler):
     # Call when an elements ends
     def endElement(self, tag):        
         if self.preserve_space_stack[-1]:
-            print(f"</{tag}", end="")
-            print(">", end="")
+            self.print_method(f"</{tag}", end="")
+            self.print_method(">", end="")
         else:
             if not self.last_was_opening_tag:
-                print()
-                print(self.indent*self.level, end="")
-            print(f"</{tag}", end="")
-            print(">",end="")
+                self.print_method()
+                self.print_method(self.indent*self.level, end="")
+            self.print_method(f"</{tag}", end="")
+            self.print_method(">",end="")
 
         self.level -= 1
         self.preserve_space_stack.pop()
@@ -177,29 +190,54 @@ class Prettifier(xml.sax.ContentHandler, xml.sax.handler.LexicalHandler):
     def characters(self, content):        
         empty_content = False
         if self.preserve_space_stack[-1]:
-            print(content, end="")
+            self.print_method(content, end="")
             empty_content = content == ""
         else:          
             empty_content = content.strip() == ""
             if not empty_content:
-                print()
-                print(self.indent*(self.level+1), end="")
-                print(content.strip(), end="")
+                self.print_method()
+                self.print_method(self.indent*(self.level+1), end="")
+                self.print_method(content.strip(), end="")
 
         self.last_was_opening_tag = self.last_was_opening_tag and empty_content
 
     # lexical handler methods:
     def comment(self, content):
-        print(f"<!--{content}-->", end="")
+        self.print_method(f"<!--{content}-->", end="")
 
+def prettify_file(file_name):
+    Handler = Prettifier()
+    parser = xml.sax.make_parser()
+    parser.setFeature(xml.sax.handler.feature_namespaces, 0)# turn off namespaces
+    parser.setContentHandler(Handler)
+    parser.setProperty(xml.sax.handler.property_lexical_handler, Handler)
 
-parser = xml.sax.make_parser()
-# turn off namepsaces
-parser.setFeature(xml.sax.handler.feature_namespaces, 0)
+    parser.parse(file_name)
 
-Handler = Prettifier()
-parser.setContentHandler( Handler )
+    return Handler.get_string()
 
-parser.setProperty ( xml.sax.handler.property_lexical_handler, Handler)
+def prettify_string(xml_string):
+    Handler = Prettifier()
+    parser = xml.sax.make_parser()
+    parser.setFeature(xml.sax.handler.feature_namespaces, 0)# turn off namespaces
+    parser.setContentHandler(Handler)
+    parser.setProperty(xml.sax.handler.property_lexical_handler, Handler)
 
-parser.parse(bad_image_path)
+    xml_string_stream = StringIO(xml_string)
+    parser.parse(xml_string_stream)
+
+    return Handler.get_string()
+
+if __name__ == "__main__":
+
+    bad_image_path = "svg_test.svg"
+    with open(bad_image_path, 'r', encoding='utf8') as f:
+        svg_string = f.read()
+
+    svg_string_pretty = prettify_string(svg_string)
+    # svg_string_pretty = prettify_file(bad_image_path)
+    
+    # print(svg_string_pretty)
+
+    with open('svg_test_pretty.svg', 'w', newline='\n') as f:
+        f.write(svg_string_pretty)
