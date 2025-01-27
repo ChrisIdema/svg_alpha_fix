@@ -21,9 +21,9 @@ fill-opacity="0.502"
 ```
 
 The following attributes will be parsed:
-* fill
-* stroke
-* flood-color
+* fill (will create fill-opacity)
+* stroke (will create stroke-opacity)
+* flood-color (will create flood-opacity)
 
 # fix SVG file
 * Use either `svg_convert_regex.py` or `svg_convert_xml.py`
@@ -32,10 +32,12 @@ The following attributes will be parsed:
 
 # Prettify
 `xml_prettify.py` has a prettify function that respects `xml:space="preserve"` and preserves significant whitespace if needed.
-It also keeps comments.
+It also keeps comments and CDATA. It doesn't preserve or process DTD.
 
 * `prettify_string` accepts XML string and returns prettified XML string
 * `prettify_file` accepts XML filename and returns prettified XML string
+
+
 
 # reference
 https://gitlab.com/inkscape/inbox/-/issues/1195
