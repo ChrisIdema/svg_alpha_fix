@@ -1,6 +1,8 @@
 import xml.sax
 from io import StringIO
 
+import re
+
 
 class Prettifier(xml.sax.ContentHandler, xml.sax.handler.LexicalHandler):
     def __init__(self, print_method=None):
@@ -116,7 +118,14 @@ class Prettifier(xml.sax.ContentHandler, xml.sax.handler.LexicalHandler):
         self.CDATA = False
 
         
+def process_xml_declaration(xml_string):
+    declaration = ""
+    regex = r"^\s*(<\?xml [^\?>]*\?>)"
+    matches = re.search(regex, xml_string)
 
+    if matches:
+        declaration = matches.group(1) + "\n"
+    return declaration
 
 def prettify_file(file_name):
     Handler = Prettifier()
@@ -127,7 +136,11 @@ def prettify_file(file_name):
 
     parser.parse(file_name)
 
-    return Handler.get_string()
+    declaration = ""
+    with open(file_name, 'r', encoding='utf8') as f:
+        declaration = process_xml_declaration(f.read())
+
+    return declaration + Handler.get_string()
 
 def prettify_string(xml_string):
     Handler = Prettifier()
@@ -139,10 +152,11 @@ def prettify_string(xml_string):
     xml_string_stream = StringIO(xml_string)
     parser.parse(xml_string_stream)
 
-    return Handler.get_string()
+    declaration = process_xml_declaration(xml_string)
+
+    return declaration + Handler.get_string()
 
 if __name__ == "__main__":
-
     bad_image_path = "svg_test.svg"
 
     with open(bad_image_path, 'r', encoding='utf8') as f:
