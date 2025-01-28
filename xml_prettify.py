@@ -1,8 +1,7 @@
 import xml.sax
 from io import StringIO
-
 import re
-
+import sys
 
 class Prettifier(xml.sax.ContentHandler, xml.sax.handler.LexicalHandler):
     def __init__(self, print_method=None):
@@ -157,15 +156,29 @@ def prettify_string(xml_string):
     return declaration + Handler.get_string()
 
 if __name__ == "__main__":
-    bad_image_path = "svg_test.svg"
 
-    with open(bad_image_path, 'r', encoding='utf8') as f:
-        svg_string = f.read()
-    svg_string_pretty = prettify_string(svg_string)
-    
-    # svg_string_pretty = prettify_file(bad_image_path)
-    
-    # print(svg_string_pretty)
+    if len(sys.argv) > 1:
 
-    with open('svg_test_pretty.svg', 'w', newline='\n') as f:
-        f.write(svg_string_pretty)
+        for bad_image_path in sys.argv[1:]:
+
+            # with open(bad_image_path, 'r', encoding='utf8') as f:
+            #     svg_string = f.read()
+            # svg_string_pretty = prettify_string(svg_string)
+
+            svg_string_pretty = prettify_file(bad_image_path)  
+            
+            with open(bad_image_path, 'w', newline='\n') as f:
+                f.write(svg_string_pretty)
+
+    else:
+        bad_image_path = "svg_test.svg"
+
+        with open(bad_image_path, 'r', encoding='utf8') as f:
+            svg_string = f.read()
+        svg_string_pretty = prettify_string(svg_string)
+        
+        # svg_string_pretty = prettify_file(bad_image_path)        
+        # print(svg_string_pretty)
+
+        with open('svg_test_pretty.svg', 'w', newline='\n') as f:
+            f.write(svg_string_pretty)
