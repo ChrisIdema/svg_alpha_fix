@@ -156,29 +156,11 @@ def prettify_string(xml_string):
     return declaration + Handler.get_string()
 
 if __name__ == "__main__":
-
     if len(sys.argv) > 1:
-
         for bad_image_path in sys.argv[1:]:
-
-            # with open(bad_image_path, 'r', encoding='utf8') as f:
-            #     svg_string = f.read()
-            # svg_string_pretty = prettify_string(svg_string)
-
             svg_string_pretty = prettify_file(bad_image_path)  
             
-            with open(bad_image_path, 'w', newline='\n') as f:
+            with open(bad_image_path, 'w', encoding='utf8', newline='\n') as f:
                 f.write(svg_string_pretty)
-
     else:
-        bad_image_path = "svg_test.svg"
-
-        with open(bad_image_path, 'r', encoding='utf8') as f:
-            svg_string = f.read()
-        svg_string_pretty = prettify_string(svg_string)
-        
-        # svg_string_pretty = prettify_file(bad_image_path)        
-        # print(svg_string_pretty)
-
-        with open('svg_test_pretty.svg', 'w', newline='\n') as f:
-            f.write(svg_string_pretty)
+        pass

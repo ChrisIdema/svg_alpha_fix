@@ -26,7 +26,7 @@ The following attributes will be parsed:
 * flood-color (will create flood-opacity)
 
 # fix SVG file
-* Use either `svg_convert_regex.py` or `svg_convert_xml.py`
+* Use either `svg_convert_regex.py` or `svg_convert_xml.py` (requires lxml python module)
 * change `bad_image_path` and `converted_image_path` in the file
 * run
 
