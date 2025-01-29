@@ -27,7 +27,7 @@ The following attributes will be parsed:
 
 # fix SVG file alpha property
 Use either `svg_convert_regex.py` or `svg_convert_xml.py` (requires lxml python module).
-By default they don't prettify.
+By default they don't prettify, but they do remove leading and trialing whitespace.
 
 How to use it:
 * pass paths of files to the scripts e.g. `svg_convert_regex.py file.svg` or drag them onto the script if dragging onto python files is enabled on your system
