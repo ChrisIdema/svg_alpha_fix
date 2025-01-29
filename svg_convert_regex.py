@@ -2,6 +2,7 @@ import re
 import os, fnmatch
 
 import xml_prettify
+import sys
 
 def svg_alpha_fix(svg_string):
 
@@ -32,15 +33,16 @@ def svg_alpha_fix(svg_string):
     result = re.sub(regex, hex_color_substitutor, result)
     return result
 
+if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        for bad_image_path in sys.argv[1:]:
 
-bad_image_path = "svg_test.svg"
-converted_image_path = "svg_test_converted_regex.svg"
+            with open(bad_image_path, 'r', encoding='utf8') as f:
+                svg_string = f.read()
 
-with open(bad_image_path, 'r', encoding='utf8') as f:
-    svg_string = f.read()
-    
-result = svg_alpha_fix(svg_string)
-
-
-with open(converted_image_path, 'w', encoding='utf8', newline='\n') as f:
-    f.write(xml_prettify.prettify_string(result))
+            result = svg_alpha_fix(svg_string)  
+            
+            with open(bad_image_path, 'w',encoding='utf8', newline='\n') as f:
+                f.write(xml_prettify.prettify_string(result))
+    else:
+        pass
