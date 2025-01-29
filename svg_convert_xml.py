@@ -4,7 +4,7 @@ import sys
 
 def svg_alpha_fix(svg_path):
     parser = ET.XMLParser(strip_cdata=False)
-    tree = ET.parse(bad_image_path, parser=parser)
+    tree = ET.parse(svg_path, parser=parser)
     root = tree.getroot()
 
     for key in["fill", "stroke", "flood-color"]:
