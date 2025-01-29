@@ -9,7 +9,7 @@ def svg_alpha_fix(svg_string):
     # split rgba colors in color and opacity:
     regex = r"(fill|stroke|flood)(-color)?\s*=\s*\"rgba\(([^\,)]+),([^\,)]+),([^\,)]+),([^\,)]+)\)\""
     subst = "\\1\\2=\"rgb(\\3,\\4,\\5)\" \\1-opacity=\"\\6\""
-    result = re.sub(regex, subst, svg_string, 0, re.MULTILINE)
+    result = re.sub(regex, subst, svg_string, count=0, flags=re.MULTILINE)
 
     # split hex colors with alpha in color and opacity:
     regex = r"(fill|stroke|flood-color)\s*=\s*\"#([[:xdigit:]]{4}|[[:xdigit:]]{8})\"".replace("[[:xdigit:]]","[0-9a-fA-F]")
