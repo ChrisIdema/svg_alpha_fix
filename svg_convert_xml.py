@@ -55,6 +55,7 @@ if __name__ == "__main__":
             result = declaration + svg_alpha_fix(bad_image_path)  
             
             with open(bad_image_path, 'w',encoding='utf8', newline='\n') as f:
-                f.write(xml_prettify.prettify_string(result))
+                f.write(result)
+                # f.write(xml_prettify.prettify_string(result))
     else:
         pass
