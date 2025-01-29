@@ -1,6 +1,7 @@
 import xml.sax
 from io import StringIO
-
+import re
+import sys
 
 class Prettifier(xml.sax.ContentHandler, xml.sax.handler.LexicalHandler):
     def __init__(self, print_method=None):
@@ -11,6 +12,7 @@ class Prettifier(xml.sax.ContentHandler, xml.sax.handler.LexicalHandler):
         self.first_tag = True
         self.external_print_method = print_method
         self.string=""
+        self.CDATA = False
 
     def get_string(self):
         return self.string
@@ -75,26 +77,54 @@ class Prettifier(xml.sax.ContentHandler, xml.sax.handler.LexicalHandler):
 
         self.last_was_opening_tag = False
     
-
-
     # Call when a character is read
-    def characters(self, content):        
-        empty_content = False
-        if self.preserve_space_stack[-1]:
+    def characters(self, content):    
+        if self.CDATA:
             self.print_method(content, end="")
-            empty_content = content == ""
-        else:          
-            empty_content = content.strip() == ""
-            if not empty_content:
-                self.print_method()
-                self.print_method(self.indent*(self.level+1), end="")
-                self.print_method(content.strip(), end="")
+        else:
+            empty_content = False
+            if self.preserve_space_stack[-1]:
+                self.print_method(content, end="")
+                empty_content = content == ""
+            else:          
+                empty_content = content.strip() == ""
+                if not empty_content:
+                    self.print_method()
+                    self.print_method(self.indent*(self.level+1), end="")
+                    self.print_method(content.strip(), end="")
 
-        self.last_was_opening_tag = self.last_was_opening_tag and empty_content
+            self.last_was_opening_tag = self.last_was_opening_tag and empty_content
 
     # lexical handler methods:
     def comment(self, content):
+        if not self.preserve_space_stack[-1]:
+            self.print_method()
+            self.print_method(self.indent*(self.level+1), end="")
+     
         self.print_method(f"<!--{content}-->", end="")
+
+    def startCDATA(self):
+        #The contents of the CDATA marked section will be reported through the characters handler.
+        if not self.preserve_space_stack[-1]:
+            self.print_method()
+            self.print_method(self.indent*(self.level+1), end="")
+    
+        self.print_method("<![CDATA[", end="")
+        self.CDATA = True
+
+    def endCDATA(self):
+        self.print_method("]]>", end="")
+        self.CDATA = False
+
+        
+def process_xml_declaration(xml_string):
+    declaration = ""
+    regex = r"^\s*(<\?xml [^\?>]*\?>)"
+    matches = re.search(regex, xml_string)
+
+    if matches:
+        declaration = matches.group(1) + "\n"
+    return declaration
 
 def prettify_file(file_name):
     Handler = Prettifier()
@@ -105,7 +135,11 @@ def prettify_file(file_name):
 
     parser.parse(file_name)
 
-    return Handler.get_string()
+    declaration = ""
+    with open(file_name, 'r', encoding='utf8') as f:
+        declaration = process_xml_declaration(f.read())
+
+    return declaration + Handler.get_string()
 
 def prettify_string(xml_string):
     Handler = Prettifier()
@@ -117,19 +151,16 @@ def prettify_string(xml_string):
     xml_string_stream = StringIO(xml_string)
     parser.parse(xml_string_stream)
 
-    return Handler.get_string()
+    declaration = process_xml_declaration(xml_string)
+
+    return declaration + Handler.get_string()
 
 if __name__ == "__main__":
-
-    bad_image_path = "svg_test.svg"
-
-    with open(bad_image_path, 'r', encoding='utf8') as f:
-        svg_string = f.read()
-    svg_string_pretty = prettify_string(svg_string)
-    
-    # svg_string_pretty = prettify_file(bad_image_path)
-    
-    # print(svg_string_pretty)
-
-    with open('svg_test_pretty.svg', 'w', newline='\n') as f:
-        f.write(svg_string_pretty)
+    if len(sys.argv) > 1:
+        for bad_image_path in sys.argv[1:]:
+            svg_string_pretty = prettify_file(bad_image_path)  
+            
+            with open(bad_image_path, 'w', encoding='utf8', newline='\n') as f:
+                f.write(svg_string_pretty)
+    else:
+        pass

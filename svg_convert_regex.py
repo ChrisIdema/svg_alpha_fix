@@ -2,13 +2,14 @@ import re
 import os, fnmatch
 
 import xml_prettify
+import sys
 
 def svg_alpha_fix(svg_string):
 
     # split rgba colors in color and opacity:
     regex = r"(fill|stroke|flood)(-color)?\s*=\s*\"rgba\(([^\,)]+),([^\,)]+),([^\,)]+),([^\,)]+)\)\""
     subst = "\\1\\2=\"rgb(\\3,\\4,\\5)\" \\1-opacity=\"\\6\""
-    result = re.sub(regex, subst, svg_string, 0, re.MULTILINE)
+    result = re.sub(regex, subst, svg_string, count=0, flags=re.MULTILINE)
 
     # split hex colors with alpha in color and opacity:
     regex = r"(fill|stroke|flood-color)\s*=\s*\"#([[:xdigit:]]{4}|[[:xdigit:]]{8})\"".replace("[[:xdigit:]]","[0-9a-fA-F]")
@@ -29,18 +30,25 @@ def svg_alpha_fix(svg_string):
 
         return f'{a}="#{color_value}" {b}="{opacity_value}"'
 
+    # fix hex color 
     result = re.sub(regex, hex_color_substitutor, result)
+
+    # remove leading and trialing whitespace
+    result = result.strip() 
+
     return result
 
+if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        for bad_image_path in sys.argv[1:]:
 
-bad_image_path = "svg_test.svg"
-converted_image_path = "svg_test_converted_regex.svg"
+            with open(bad_image_path, 'r', encoding='utf8') as f:
+                svg_string = f.read()
 
-with open(bad_image_path, 'r', encoding='utf8') as f:
-    svg_string = f.read()
-    
-result = svg_alpha_fix(svg_string)
-
-
-with open(converted_image_path, 'w', encoding='utf8', newline='\n') as f:
-    f.write(xml_prettify.prettify_string(result))
+            result = svg_alpha_fix(svg_string)  
+            
+            with open(bad_image_path, 'w',encoding='utf8', newline='\n') as f:
+                f.write(result)
+                # f.write(xml_prettify.prettify_string(result))
+    else:
+        pass
