@@ -47,7 +47,11 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         for bad_image_path in sys.argv[1:]:
 
-            result = svg_alpha_fix(bad_image_path)  
+            with open(bad_image_path, 'r', encoding='utf8') as f:
+                svg_string = f.read()
+            declaration = xml_prettify.process_xml_declaration(svg_string)
+
+            result = declaration + svg_alpha_fix(bad_image_path)  
             
             with open(bad_image_path, 'w',encoding='utf8', newline='\n') as f:
                 f.write(xml_prettify.prettify_string(result))
