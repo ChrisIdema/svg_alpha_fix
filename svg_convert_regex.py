@@ -30,7 +30,12 @@ def svg_alpha_fix(svg_string):
 
         return f'{a}="#{color_value}" {b}="{opacity_value}"'
 
+    # fix hex color 
     result = re.sub(regex, hex_color_substitutor, result)
+
+    # remove leading and trialing whitespace
+    result = result.strip() 
+
     return result
 
 if __name__ == "__main__":
