@@ -7,7 +7,7 @@ fill="rgba(1,2,3,50%)"
 ```
 Becomes:
 ```
-fill="rgba(1,2,3)"
+fill="rgb(1,2,3)"
 fill-opacity="50%"
 ```
 Example2:
@@ -38,7 +38,7 @@ How to use it:
 
 # Prettify
 `xml_prettify.py` has a prettify function that respects `xml:space="preserve"` and preserves significant whitespace if needed.
-It preserverves the xml declaration. It also keeps comments and CDATA. It doesn't preserve or process DTD. 
+It preserves the xml declaration. It also keeps comments and CDATA. It doesn't preserve or process DTD. 
 
 * `prettify_string()` accepts XML string and returns prettified XML string
 * `prettify_file()` accepts XML filename and returns prettified XML string
